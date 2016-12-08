@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+  <canvas id="myCanvas" width="500" height="300" style="border:1px solid #000000;">
+    Your browser does not support the HTML5 canvas tag.
+  </canvas>
+  <div>
+    <button onclick="addBall()">Add Ball</button>
+    <button onclick="removeBall()">Remove Ball</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.6.0/socket.io.min.js"></script>
+  <script>
+    var socket= io();
+    var c = document.getElementById("myCanvas");
+    var ctx = this.c.getContext("2d");
+    var balls = [];
+
+    function draw() { 
+      ctx.clearRect(0, 0, c.width, c.height);
+
+      balls.forEach(function(item) {
+        ctx.beginPath();
+        ctx.arc(item.x, item.y, item.radius, 0, Math.PI*2, false);
+        ctx.fillStyle = item.color;
+        ctx.fill();
+        ctx.closePath();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    socket.on('ballsincoming', function(message){
+      balls = message;
+    });
+
+    function addBall() {
+      socket.emit('addball');
+    }
+
+    function removeBall() {
+      socket.emit('removeball');
+    }
+
+    draw();
+  
+</script>
+</body>
+</html>
